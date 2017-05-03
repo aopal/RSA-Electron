@@ -1,7 +1,0 @@
-{
-  "name"    : "RSA",
-  "version" : "1.0.0",
-  "main"    : "main.js",
-  "nodejs"  : true,
-  "node-integration" : true
-}

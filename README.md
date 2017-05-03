@@ -1,12 +1,8 @@
-# RSA-Electron
+# node-RSA
 
 
-This is the repository for my implementation of the RSA cryptosystem using Electron
+This is the repository for my implementation of the RSA cryptosystem using node.js
 
 Current Stage:
 
-Key generation working and tested up to 4096 bits
-
-encryption working on plain text
-
-file writing to plain text
+CLI tool to generate, encrypt and decrypt to/from text files
