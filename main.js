@@ -15,7 +15,7 @@ main = function() {
       return;
     }
     
-    keygen(bitLength);
+    keygen(bitLength, argv[4], argv[5]);
   }
   else if (argv[2] == "-e") {
     if(!fs.existsSync(argv[3])){
@@ -29,15 +29,13 @@ main = function() {
     
     key  = readFromFile(argv[3]).split("\n");
     text = readFromFile(argv[4]);
-    bitlength = parseInt(argv[3].match(/[0-9]+/)[0]);
+    bitlength = key[0];
     
-    cipher = encrypt(text, bigInt(key[0]), bigInt(key[1]), bitlength);
+    cipher = encrypt(text, bigInt(key[1]), bigInt(key[2]), bitlength);
     
     writeText = cipher.map(function(elem) {return elem.toString();}).join("\n");
     
-    writeToFile(writeText, argv[5]);
-    
-    console.log("results written to " + argv[5]);
+    console.log(writeText);
   }
   else if (argv[2] == "-d") {
     if(!fs.existsSync(argv[3])){
@@ -54,15 +52,13 @@ main = function() {
     
     text = decrypt(cipher, bigInt(key[0]), bigInt(key[1]));  
     
-    writeToFile(text, argv[5]);
-    
-    console.log("results written to " + argv[5]);
+    console.log(text);
   }
   else {
     console.log("Usage: one of");
-    console.log("node main.js -g [BITLENGTH]");
-    console.log("node main.js -e [PUBLIC_KEY] [SOURCE_FILE] [OUTPUT_FILE]");
-    console.log("node main.js -d [PRIVATE_KEY] [SOURCE_FILE] [OUTPUT_FILE]");
+    console.log("node main.js -g [BITLENGTH] [PUBLIC_KEY_FILE] [PRIVATE_KEY_FILE]");
+    console.log("node main.js -e [PUBLIC_KEY] [SOURCE_FILE]");
+    console.log("node main.js -d [PRIVATE_KEY] [SOURCE_FILE]");
   }
 };
 
@@ -91,14 +87,13 @@ inverse = function(e, totient) {
     newr = bigInt(tempr).minus(bigInt(quotient).times(newr));
   }
   
-  if (d.lt(0)) {
+  if (d.lt(0))
     d = bigInt(d).plus(totient);
-  }
   
   return d;
 };
 
-keygen = function(bitlength) {
+keygen = function(bitlength, pubName, privName) {
   upper = bigInt(1).shiftLeft(bitlength / 2 + 1).minus(1);
   lower = bigInt(1).shiftLeft(bitlength / 2);
   p = bigInt(bitlength / 2);
@@ -107,52 +102,42 @@ keygen = function(bitlength) {
   b = 0;
   d1 = new Date();
   t1 = d1.getTime();
-  
-  console.log("starting...");
-  
-  while (!p.isProbablePrime(numTrials)) {
+    
+  while (!p.isProbablePrime(numTrials))
     p = bigInt.randBetween(upper, lower);
-    a++;
-  }
-  while (!q.isProbablePrime(numTrials)) {
+    
+  while (!q.isProbablePrime(numTrials))
     q = bigInt.randBetween(upper, lower);
-    b++;
-  }
   
   n = p.times(q);
   totient = n.minus(p).minus(q).plus(1);
   e = 65537;
   
-  while (bigInt.gcd(e, totient).neq(1)) {
+  while (bigInt.gcd(e, totient).neq(1))
     e = bigInt.randBetween(11, totient.minus(1));
-  }
   
   d = inverse(e, totient);
   d2 = new Date();
   t2 = d2.getTime();
-  
-  console.log("done");
-  
+    
   delta = (t2 - t1) / 60000;
-  
-  console.log("it took " + delta + " seconds to generate the keys");
-  
-  writeToFile(n.toString() + "\n" + e.toString(),"pub" + bitlength);
-  writeToFile(n.toString() + "\n" + d.toString(),"priv" + bitlength);
+    
+  writeToFile(bitlength + "\n" + n.toString() + "\n" + e.toString(),pubName);
+  writeToFile(n.toString() + "\n" + d.toString(),privName);
 };
 
 reverse = function(str) {
   newStr = '';
   for (var i = str.length - 1; i >= 0; i--)
     newStr += str[i];
+  
   return newStr;
 };
 
 // concatenates all characters in a string between the two limits inclusive
 concatenate = function(str, lo, hi) {
-  if (hi < lo || hi >= str.length) {
+  if (hi < lo || hi >= str.length)
     hi = str.length - 1;
-  }
   
   n = bigInt(0);
   for (var i = lo; i <= hi; i++) {
@@ -172,9 +157,8 @@ deconcatenate = function(num) {
     temp = num.mod(256);
     num = num.shiftRight(8);
     str += String.fromCharCode(temp);
-    if (num <= bigInt(0)) {
+    if (num <= bigInt(0))
       break;
-    }
   }
   
   str = reverse(str);
@@ -188,9 +172,7 @@ encrypt = function(text, n, e, bitlength) {
   encrypted = [];
   cipher = [];
   m = bigInt(0);
-  
-  console.log("starting encryption");
-  
+    
   for (i = 0; i < len; i += numchars) {
     m = bigInt(concatenate(text, i, i + numchars - 1));
     res = m.modPow(e, n);
