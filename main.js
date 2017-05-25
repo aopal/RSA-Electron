@@ -57,8 +57,8 @@ main = function() {
   else {
     console.log("Usage: one of");
     console.log("node main.js -g [BITLENGTH] [PUBLIC_KEY_FILE] [PRIVATE_KEY_FILE]");
-    console.log("node main.js -e [PUBLIC_KEY] [SOURCE_FILE]");
-    console.log("node main.js -d [PRIVATE_KEY] [SOURCE_FILE]");
+    console.log("node main.js -e [PUBLIC_KEY_FILE] [SOURCE_FILE]");
+    console.log("node main.js -d [PRIVATE_KEY_FILE] [SOURCE_FILE]");
   }
 };
 
