@@ -1,6 +1,8 @@
 fs = require("fs");
 bigInt = require("big-integer");
 
+process.stdin.setEncoding('utf8');
+
 numTrials = 20;
 encoding = "utf8";
 
@@ -22,13 +24,9 @@ main = function() {
       console.log("Error: no such file " + argv[3]);
       return;
     }
-    else if(!fs.existsSync(argv[4])){
-      console.log("Error: no such file " + argv[4]);
-      return;
-    }
     
     key  = readFromFile(argv[3]).split("\n");
-    text = readFromFile(argv[4]);
+    text = readFromFile('/dev/stdin');
     bitlength = key[0];
     
     cipher = encrypt(text, bigInt(key[1]), bigInt(key[2]), bitlength);
@@ -42,13 +40,9 @@ main = function() {
       console.log("Error: no such file " + argv[3]);
       return;
     }
-    else if(!fs.existsSync(argv[4])){
-      console.log("Error: no such file " + argv[4]);
-      return;
-    }
     
-    key  = readFromFile(argv[3]).split("\n");
-    cipher = readFromFile(argv[4]);
+    key = readFromFile(argv[3]).split("\n");
+    cipher = readFromFile('/dev/stdin');
     
     text = decrypt(cipher, bigInt(key[0]), bigInt(key[1]));  
     
@@ -57,8 +51,8 @@ main = function() {
   else {
     console.log("Usage: one of");
     console.log("node main.js -g [BITLENGTH] [PUBLIC_KEY_FILE] [PRIVATE_KEY_FILE]");
-    console.log("node main.js -e [PUBLIC_KEY_FILE] [SOURCE_FILE]");
-    console.log("node main.js -d [PRIVATE_KEY_FILE] [SOURCE_FILE]");
+    console.log("node main.js -e [PUBLIC_KEY_FILE]");
+    console.log("node main.js -d [PRIVATE_KEY_FILE]");
   }
 };
 
